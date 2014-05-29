@@ -12,3 +12,6 @@
 
 (require 'tramp)
 (setq tramp-default-method "ssh")
+
+(require 'rainbow-delimiters)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)

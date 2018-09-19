@@ -46,6 +46,9 @@
       	    (package-install package)))
       myPackages)
 
+;; Disable bell
+(setq visible-bell 'top-bottom)
+(setq bell-volume 0)
 
 ;; Auto Completions
 (add-hook 'after-init-hook 'global-company-mode)

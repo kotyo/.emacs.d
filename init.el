@@ -1,5 +1,10 @@
 ;; init.el --- Emacs configuration
 
+;; MacOS key bindings
+(setq mac-command-modifier 'control)
+(setq mac-option-modifier 'meta)
+(set-default-font "Menlo 13")
+
 ;; INSTALL PACKAGES
 ;; --------------------------------------
 
@@ -9,7 +14,9 @@
 (add-to-list 'package-archives
 	     '("gnu" . "https://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/") t)
+	     '("marmalade" . "http://marmalade-repo.org/packages/"))
+(add-to-list 'package-archives
+	     '("melpa" . "https://melpa.org/packages/"))
 
 (package-initialize)
 (when (not package-archive-contents)
@@ -17,10 +24,11 @@
 
 (defvar myPackages
   '(better-defaults
+    auto-package-update
     ;; Auto completion
     company
     ;; Python
-    elpy
+    ;elpy
     ;; Clojure
     use-package
     cider
@@ -38,13 +46,21 @@
     flycheck
     ;; File Tree sidebar
     treemacs
-    ;; Colot theme
-    material-theme))
+    ;; Color themes
+    spacemacs-theme
+    spaceline))
 
 (mapc #'(lambda (package)
           (unless (package-installed-p package)
       	    (package-install package)))
       myPackages)
+
+(use-package auto-package-update
+   :ensure t
+   :config
+   (setq auto-package-update-delete-old-versions t
+         auto-package-update-interval 4)
+   (auto-package-update-maybe))
 
 ;; Disable bell
 (setq visible-bell 'top-bottom)
@@ -54,10 +70,18 @@
 (add-hook 'after-init-hook 'global-company-mode)
 
 ;; Clojure
+(require 'cider)
+(setq cider-repl-pop-to-buffer-on-connect 'display-only)
 
 ;; Paredit
 (add-hook 'clojure-mode-hook 'paredit-mode)
 (add-hook 'clojurescript-mode-hook 'paredit-mode)
+(eval-after-load "paredit"
+  '(progn
+     (define-key paredit-mode-map (kbd "C-<left>") nil)
+     (define-key paredit-mode-map (kbd "C-<right>") nil)
+     (define-key paredit-mode-map (kbd "C-S-<left>") 'paredit-forward-barf-sexp)
+     (define-key paredit-mode-map (kbd "C-S-<right>") 'paredit-forward-slurp-sexp)))
 
 ;; Highlight parentheses
 (require 'highlight-parentheses)
@@ -71,9 +95,12 @@
 (global-set-key [f3] 'highlight-symbol-next)
 (global-set-key [(shift f3)] 'highlight-symbol-prev)
 (global-set-key [(meta f3)] 'highlight-symbol-query-replace)
+(setq highlight-symbol-idle-delay 0.1)
+(add-hook 'clojure-mode-hook
+	  (lambda ()
+	    (highlight-symbol-mode)))
 
 ;; Set window title, to opened file:
-
 (setq frame-title-format "%b")
 
 
@@ -129,32 +156,39 @@
 
 ;; PYTHON LANGUAGE CONFIG
 
-
-(elpy-enable)
-(when (require 'flycheck nil t)
-  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
-  (add-hook 'elpy-mode-hook 'flycheck-mode))
-
-
-;; LAUNCHING TREEMACS
+;(elpy-enable)
+;(when (require 'flycheck nil t)
+;  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+;  (add-hook 'elpy-mode-hook 'flycheck-mode))
 
 
-(treemacs)
+;; SETTING UP TREEMACS
+(require 'treemacs)
+(global-set-key [(control ?p)] 'treemacs)
+(defun custom-treemacs-file-open
+    (p)
+  "Custom function to handle RET keys in treemacs on files forwarding parameter P."
+  (treemacs-visit-node-no-split p)
+  (treemacs))
+(treemacs-define-RET-action 'file-node-open #'custom-treemacs-file-open)
+(treemacs-define-RET-action 'file-node-closed #'custom-treemacs-file-open)
 
-
-;; TURN OFF BACKUPS
+;; SET BACKUP DIR
 
 ;; backup in one place. flat, no tree structure
 (setq backup-directory-alist '(("" . "~/.emacs.d/emacs-backup")))
-
-
 
 ;; BASIC CUSTOMIZATION
 ;; --------------------------------------
 
 (setq inhibit-startup-message t) ;; hide the startup message
-(load-theme 'material t) ;; load material theme
-(global-linum-mode t) ;; enable line numbers globally
+(load-theme 'spacemacs-light t)
+(require 'spaceline-config)
+(spaceline-emacs-theme)
+
+(setq display-line-numbers (quote relative))
+(global-display-line-numbers-mode t)
+(add-hook 'treemacs-mode-hook (lambda() (display-line-numbers-mode -1))) ;; disable for treemacs
 
 ;; init.el ends here
 (custom-set-variables
@@ -162,7 +196,9 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages (quote (cider material-theme better-defaults)))
+ '(package-selected-packages
+   (quote
+    (solarized-theme cider material-theme better-defaults)))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -170,3 +206,53 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
+;; EMACS WINDOW SIZE SAVE
+
+(defun save-framegeometry ()
+  "Gets the current frame's geometry and saves to ~/.emacs.d/framegeometry."
+  (let (
+        (framegeometry-left (frame-parameter (selected-frame) 'left))
+        (framegeometry-top (frame-parameter (selected-frame) 'top))
+        (framegeometry-width (frame-parameter (selected-frame) 'width))
+        (framegeometry-height (frame-parameter (selected-frame) 'height))
+        (framegeometry-file (expand-file-name "~/.emacs.d/framegeometry"))
+        )
+
+    (when (not (number-or-marker-p framegeometry-left))
+      (setq framegeometry-left 0))
+    (when (not (number-or-marker-p framegeometry-top))
+      (setq framegeometry-top 0))
+    (when (not (number-or-marker-p framegeometry-width))
+      (setq framegeometry-width 0))
+    (when (not (number-or-marker-p framegeometry-height))
+      (setq framegeometry-height 0))
+
+    (with-temp-buffer
+      (insert
+       ";;; This is the previous emacs frame's geometry.\n"
+       ";;; Last generated " (current-time-string) ".\n"
+       "(setq initial-frame-alist\n"
+       "      '(\n"
+       (format "        (top . %d)\n" (max framegeometry-top 0))
+       (format "        (left . %d)\n" (max framegeometry-left 0))
+       (format "        (width . %d)\n" (max framegeometry-width 0))
+       (format "        (height . %d)))\n" (max framegeometry-height 0)))
+      (when (file-writable-p framegeometry-file)
+        (write-file framegeometry-file))))
+  )
+
+(defun load-framegeometry ()
+  "Loads ~/.emacs.d/framegeometry which should load the previous frame's geometry."
+  (let ((framegeometry-file (expand-file-name "~/.emacs.d/framegeometry")))
+    (when (file-readable-p framegeometry-file)
+      (load-file framegeometry-file)))
+  )
+
+;; Special work to do ONLY when there is a window system being used
+(if window-system
+    (progn
+      (add-hook 'after-init-hook 'load-framegeometry)
+      (add-hook 'kill-emacs-hook 'save-framegeometry))
+  )
+

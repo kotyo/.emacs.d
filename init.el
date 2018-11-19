@@ -3,7 +3,7 @@
 ;; MacOS key bindings
 (setq mac-command-modifier 'control)
 (setq mac-option-modifier 'meta)
-(set-default-font "Menlo 13")
+(set-default-font "Menlo 12")
 
 ;; INSTALL PACKAGES
 ;; --------------------------------------
@@ -13,8 +13,6 @@
 ;;; Code:
 (add-to-list 'package-archives
 	     '("gnu" . "https://elpa.gnu.org/packages/"))
-(add-to-list 'package-archives
-	     '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives
 	     '("melpa" . "https://melpa.org/packages/"))
 
@@ -27,6 +25,8 @@
     auto-package-update
     ;; Auto completion
     company
+    ;; Git
+    magit
     ;; Python
     ;elpy
     ;; Clojure
@@ -48,6 +48,7 @@
     treemacs
     ;; Color themes
     spacemacs-theme
+    ;solarized-theme
     spaceline))
 
 (mapc #'(lambda (package)
@@ -55,12 +56,28 @@
       	    (package-install package)))
       myPackages)
 
+
+;; Auto package update
+
 (use-package auto-package-update
    :ensure t
    :config
    (setq auto-package-update-delete-old-versions t
          auto-package-update-interval 4)
    (auto-package-update-maybe))
+
+;; Load Theme
+
+(defconst current-theme 'spacemacs-dark)
+
+(load-theme current-theme t)
+(spaceline-emacs-theme)
+
+
+;; MAGIT
+(require 'magit)
+(add-hook 'after-save-hook 'magit-after-save-refresh-status t)
+(global-set-key (kbd "C-x g") 'magit-status)
 
 ;; Disable bell
 (setq visible-bell 'top-bottom)
@@ -95,14 +112,16 @@
 (global-set-key [f3] 'highlight-symbol-next)
 (global-set-key [(shift f3)] 'highlight-symbol-prev)
 (global-set-key [(meta f3)] 'highlight-symbol-query-replace)
-(setq highlight-symbol-idle-delay 0.1)
+(setq highlight-symbol-idle-delay 0.6)
 (add-hook 'clojure-mode-hook
 	  (lambda ()
 	    (highlight-symbol-mode)))
 
-;; Set window title, to opened file:
+;; Set window settings
 (setq frame-title-format "%b")
 
+;; Turn off scroll bar
+(scroll-bar-mode -1)
 
 ;; JS configuration
 
@@ -153,7 +172,6 @@
 (add-hook 'flycheck-mode-hook #'my/use-eslint-from-node-modules)
 
 
-
 ;; PYTHON LANGUAGE CONFIG
 
 ;(elpy-enable)
@@ -163,15 +181,18 @@
 
 
 ;; SETTING UP TREEMACS
-(require 'treemacs)
 (global-set-key [(control ?p)] 'treemacs)
-(defun custom-treemacs-file-open
-    (p)
-  "Custom function to handle RET keys in treemacs on files forwarding parameter P."
-  (treemacs-visit-node-no-split p)
-  (treemacs))
-(treemacs-define-RET-action 'file-node-open #'custom-treemacs-file-open)
-(treemacs-define-RET-action 'file-node-closed #'custom-treemacs-file-open)
+(with-eval-after-load 'treemacs
+  (treemacs-toggle-show-dotfiles)
+  ;; HACK to load the theme again when treemacs loads to adopt right BG color.
+  (add-hook 'treemacs-mode-hook (lambda () (load-theme current-theme)))
+  (defun custom-treemacs-file-open
+      (p)
+    "Custom function to handle RET keys in treemacs on files forwarding parameter P."
+    (treemacs-visit-node-no-split p)
+    (treemacs))
+  (treemacs-define-RET-action 'file-node-open #'custom-treemacs-file-open)
+  (treemacs-define-RET-action 'file-node-closed #'custom-treemacs-file-open))
 
 ;; SET BACKUP DIR
 
@@ -182,24 +203,29 @@
 ;; --------------------------------------
 
 (setq inhibit-startup-message t) ;; hide the startup message
-(load-theme 'spacemacs-light t)
-(require 'spaceline-config)
-(spaceline-emacs-theme)
 
 (setq display-line-numbers (quote relative))
 (global-display-line-numbers-mode t)
 (add-hook 'treemacs-mode-hook (lambda() (display-line-numbers-mode -1))) ;; disable for treemacs
 
 ;; init.el ends here
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
+ '(highlight-symbol-foreground-color
+     "yellow")
+ '(ansi-color-names-vector
+   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
+ '(custom-safe-themes
    (quote
-    (solarized-theme cider material-theme better-defaults)))
+    ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
+ '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
  '(tool-bar-mode nil))
+
+
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

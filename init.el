@@ -3,7 +3,11 @@
 ;; MacOS key bindings
 (setq mac-command-modifier 'control)
 (setq mac-option-modifier 'meta)
-(set-default-font "Menlo 12")
+;(set-default-font "Menlo 12")
+
+;(setq
+; hscroll-step 1
+; scroll-conservatively 1000)
 
 ;; INSTALL PACKAGES
 ;; --------------------------------------
@@ -27,6 +31,8 @@
     company
     ;; Git
     magit
+    ;; Very large file
+    vlf
     ;; Python
     ;elpy
     ;; Clojure
@@ -73,11 +79,13 @@
 (load-theme current-theme t)
 (spaceline-emacs-theme)
 
-
 ;; MAGIT
 (require 'magit)
 (add-hook 'after-save-hook 'magit-after-save-refresh-status t)
 (global-set-key (kbd "C-x g") 'magit-status)
+
+;; Very large files
+(require 'vlf-setup)
 
 ;; Disable bell
 (setq visible-bell 'top-bottom)
@@ -215,13 +223,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(highlight-symbol-foreground-color
-     "yellow")
  '(ansi-color-names-vector
    ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
  '(custom-safe-themes
    (quote
     ("bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
+ '(highlight-symbol-foreground-color "yellow")
+ '(package-selected-packages
+   (quote
+    (sublimity xah-find which-key web-mode use-package treemacs spacemacs-theme spaceline solarized-theme soft-stone-theme soft-morning-theme parinfer paredit organic-green-theme monokai-theme monokai-alt-theme moe-theme material-theme magit json-mode js2-mode highlight-symbol highlight-parentheses hamburg-theme github-modern-theme flycheck flatui-theme exec-path-from-shell elpy cider better-defaults auto-package-update alect-themes)))
  '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
  '(tool-bar-mode nil))
 

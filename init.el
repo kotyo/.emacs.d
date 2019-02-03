@@ -38,6 +38,7 @@
     ;; Clojure
     use-package
     cider
+    clj-refactor
     paredit
     highlight-symbol
     highlight-parentheses
@@ -98,6 +99,14 @@
 (require 'cider)
 (setq cider-repl-pop-to-buffer-on-connect 'display-only)
 
+(require 'clj-refactor)
+(defun my-clojure-mode-hook ()
+    (clj-refactor-mode 1)
+    (yas-minor-mode 1) ; for adding require/use/import statements
+    ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+    (cljr-add-keybindings-with-prefix "C-c C-m"))
+(add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
+
 ;; Paredit
 (add-hook 'clojure-mode-hook 'paredit-mode)
 (add-hook 'clojurescript-mode-hook 'paredit-mode)
@@ -124,6 +133,9 @@
 (add-hook 'clojure-mode-hook
 	  (lambda ()
 	    (highlight-symbol-mode)))
+
+;; Search under cursor
+(global-set-key (kbd "C-S") 'isearch-forward-symbol-at-point)
 
 ;; Set window settings
 (setq frame-title-format "%b")

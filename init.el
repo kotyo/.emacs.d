@@ -1,13 +1,9 @@
 ;; init.el --- Emacs configuration
 
 ;; MacOS key bindings
-(setq mac-command-modifier 'control)
-(setq mac-option-modifier 'meta)
+;(setq mac-command-modifier 'control)
+;(setq mac-option-modifier 'meta)
 ;(set-default-font "Menlo 12")
-
-;(setq
-; hscroll-step 1
-; scroll-conservatively 1000)
 
 ;; INSTALL PACKAGES
 ;; --------------------------------------
@@ -27,8 +23,12 @@
 (defvar myPackages
   '(better-defaults
     auto-package-update
+    ;; Desktop handling
+    desktop
+    ;; Scrolling
+    smooth-scrolling
     ;; Auto completion
-    company
+    ;; company
     ;; Git
     magit
     ;; Very large file
@@ -37,6 +37,8 @@
     ;elpy
     ;; Clojure
     use-package
+    ;;projectile
+    clojure-mode
     cider
     clj-refactor
     paredit
@@ -56,7 +58,9 @@
     ;; Color themes
     spacemacs-theme
     ;solarized-theme
-    spaceline))
+    ;;spaceline
+    powerline
+    ))
 
 (mapc #'(lambda (package)
           (unless (package-installed-p package)
@@ -74,11 +78,29 @@
    (auto-package-update-maybe))
 
 ;; Load Theme
-
-(defconst current-theme 'spacemacs-dark)
-
+(defconst current-theme 'spacemacs-light)
 (load-theme current-theme t)
-(spaceline-emacs-theme)
+;;(spaceline-emacs-theme)
+(require 'powerline)
+;;(powerline-revert)
+
+;; Scrolling
+(require 'smooth-scrolling)
+(smooth-scrolling-mode 1)
+(setq smooth-scroll-margin 5)
+(xterm-mouse-mode 1)
+;; Fix mouse wheel bindings
+(global-set-key (kbd "<mouse-4>") 'scroll-down-line)
+(global-set-key (kbd "<mouse-5>") 'scroll-up-line)
+;; (setq scroll-step            1
+;;       scroll-conservatively  10000)
+
+
+;; Menu bar
+(menu-bar-mode -1)
+
+;; Desktop save mode
+(desktop-save-mode 1)
 
 ;; MAGIT
 (require 'magit)
@@ -141,7 +163,7 @@
 (setq frame-title-format "%b")
 
 ;; Turn off scroll bar
-(scroll-bar-mode -1)
+(scroll-bar-mode 1)
 
 ;; JS configuration
 
@@ -205,7 +227,7 @@
 (with-eval-after-load 'treemacs
   (treemacs-toggle-show-dotfiles)
   ;; HACK to load the theme again when treemacs loads to adopt right BG color.
-  (add-hook 'treemacs-mode-hook (lambda () (load-theme current-theme)))
+  ;;(add-hook 'treemacs-mode-hook (lambda () (load-theme current-theme)))
   (defun custom-treemacs-file-open
       (p)
     "Custom function to handle RET keys in treemacs on files forwarding parameter P."
@@ -213,6 +235,7 @@
     (treemacs))
   (treemacs-define-RET-action 'file-node-open #'custom-treemacs-file-open)
   (treemacs-define-RET-action 'file-node-closed #'custom-treemacs-file-open))
+
 
 ;; SET BACKUP DIR
 
@@ -224,9 +247,10 @@
 
 (setq inhibit-startup-message t) ;; hide the startup message
 
-(setq display-line-numbers (quote relative))
-(global-display-line-numbers-mode t)
-(add-hook 'treemacs-mode-hook (lambda() (display-line-numbers-mode -1))) ;; disable for treemacs
+;; Line numbers
+;;(setq display-line-numbers (quote relative))
+;;(global-display-line-numbers-mode t)
+;;(add-hook 'treemacs-mode-hook (lambda() (display-line-numbers-mode -1))) ;; disable for treemacs
 
 ;; init.el ends here
 

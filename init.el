@@ -78,7 +78,7 @@
    (auto-package-update-maybe))
 
 ;; Load Theme
-(defconst current-theme 'spacemacs-light)
+(defconst current-theme 'spacemacs-dark)
 (load-theme current-theme t)
 ;;(spaceline-emacs-theme)
 (require 'powerline)
@@ -101,6 +101,7 @@
 
 ;; Desktop save mode
 (desktop-save-mode 1)
+(setq desktop-path '("."))
 
 ;; MAGIT
 (require 'magit)
@@ -120,6 +121,9 @@
 ;; Clojure
 (require 'cider)
 (setq cider-repl-pop-to-buffer-on-connect 'display-only)
+(setq cider-show-error-buffer 'only-in-repl)
+(setq cider-show-eval-spinner 'true)
+
 
 (require 'clj-refactor)
 (defun my-clojure-mode-hook ()
@@ -151,13 +155,28 @@
 (global-set-key [f3] 'highlight-symbol-next)
 (global-set-key [(shift f3)] 'highlight-symbol-prev)
 (global-set-key [(meta f3)] 'highlight-symbol-query-replace)
-(setq highlight-symbol-idle-delay 0.6)
+(setq highlight-symbol-idle-delay 0.4)
 (add-hook 'clojure-mode-hook
 	  (lambda ()
 	    (highlight-symbol-mode)))
+(defun highlight-symbol-face-settings ()
+  "Face settings for `highlight-symbol'."
+  (custom-set-faces
+   '(highlight-symbol-face
+     ((((type tty))
+       :background "DarkGreen")
+      (((class color) (background dark))
+       :background "gray30" :foreground "#AD0DE2FAFFFF")
+      (((class color) (background light))
+       :background "gray90")))))
+
+(eval-after-load "highlight-symbol"
+  `(highlight-symbol-face-settings))
 
 ;; Search under cursor
-(global-set-key (kbd "C-S") 'isearch-forward-symbol-at-point)
+(global-unset-key (kbd "C-M-s"))
+(global-set-key (kbd "C-M-s") 'isearch-forward-symbol-at-point)
+(global-set-key (kbd "C-s") 'isearch-forward)
 
 ;; Set window settings
 (setq frame-title-format "%b")

@@ -5,6 +5,19 @@
 ;(setq mac-option-modifier 'meta)
 ;(set-default-font "Menlo 12")
 
+;; Macos copy-paste
+(defun copy-from-osx ()
+  (shell-command-to-string "pbpaste"))
+
+(defun paste-to-osx (text &optional push)
+  (let ((process-connection-type nil))
+    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+      (process-send-string proc text)
+      (process-send-eof proc))))
+
+(setq interprogram-cut-function 'paste-to-osx)
+(setq interprogram-paste-function 'copy-from-osx)
+
 ;; INSTALL PACKAGES
 ;; --------------------------------------
 
@@ -117,6 +130,9 @@
 
 ;; Auto Completions
 (add-hook 'after-init-hook 'global-company-mode)
+
+;; Prettify symbols
+(global-prettify-symbols-mode +1)
 
 ;; Clojure
 (require 'cider)

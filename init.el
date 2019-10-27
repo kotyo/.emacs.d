@@ -41,7 +41,7 @@
     ;; Scrolling
     smooth-scrolling
     ;; Auto completion
-    ;; company
+    company
     ;; Git
     magit
     ;; Very large file
@@ -69,10 +69,11 @@
     ;; File Tree sidebar
     treemacs
     ;; Color themes
-    spacemacs-theme
+    ;spacemacs-theme
     ;solarized-theme
     ;;spaceline
-    powerline
+    ;powerline
+    flatui-theme
     ))
 
 (mapc #'(lambda (package)
@@ -91,11 +92,13 @@
    (auto-package-update-maybe))
 
 ;; Load Theme
-(defconst current-theme 'spacemacs-dark)
+(defconst current-theme 'flatui)
 (load-theme current-theme t)
+(set-cursor-color "#ffffff")
 ;;(spaceline-emacs-theme)
-(require 'powerline)
+;(require 'powerline)
 ;;(powerline-revert)
+(global-hl-line-mode +1)
 
 ;; Scrolling
 (require 'smooth-scrolling)
@@ -107,7 +110,6 @@
 (global-set-key (kbd "<mouse-5>") 'scroll-up-line)
 ;; (setq scroll-step            1
 ;;       scroll-conservatively  10000)
-
 
 ;; Menu bar
 (menu-bar-mode -1)
@@ -134,10 +136,13 @@
 ;; Prettify symbols
 (global-prettify-symbols-mode +1)
 
+;; Activate which-key-mode
+(which-key-mode 1)
+
 ;; Clojure
 (require 'cider)
 (setq cider-repl-pop-to-buffer-on-connect 'display-only)
-(setq cider-show-error-buffer 'only-in-repl)
+;(setq cider-show-error-buffer 'only-in-repl)
 (setq cider-show-eval-spinner 'true)
 
 
@@ -175,19 +180,20 @@
 (add-hook 'clojure-mode-hook
 	  (lambda ()
 	    (highlight-symbol-mode)))
-(defun highlight-symbol-face-settings ()
-  "Face settings for `highlight-symbol'."
-  (custom-set-faces
-   '(highlight-symbol-face
-     ((((type tty))
-       :background "DarkGreen")
-      (((class color) (background dark))
-       :background "gray30" :foreground "#AD0DE2FAFFFF")
-      (((class color) (background light))
-       :background "gray90")))))
 
-(eval-after-load "highlight-symbol"
-  `(highlight-symbol-face-settings))
+;(defun highlight-symbol-face-settings ()
+;  "Face settings for `highlight-symbol'."
+;  (custom-set-faces
+;   '(highlight-symbol-face
+;     ((((type tty))
+;       :background "cyan")
+;      (((class color) (background light))
+;       :background "gray30" :foreground "#AD0DE2FAFFFF")
+;      (((class color) (background dark))
+;       :background "gray90")))))
+;
+;(eval-after-load "highlight-symbol"
+;  `(highlight-symbol-face-settings))
 
 ;; Search under cursor
 (global-unset-key (kbd "C-M-s"))
@@ -286,33 +292,6 @@
 ;;(setq display-line-numbers (quote relative))
 ;;(global-display-line-numbers-mode t)
 ;;(add-hook 'treemacs-mode-hook (lambda() (display-line-numbers-mode -1))) ;; disable for treemacs
-
-;; init.el ends here
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#0a0814" "#f2241f" "#67b11d" "#b1951d" "#4f97d7" "#a31db1" "#28def0" "#b2b2b2"])
- '(custom-safe-themes
-   (quote
-    ("fa2b58bb98b62c3b8cf3b6f02f058ef7827a8e497125de0254f56e373abee088" "bffa9739ce0752a37d9b1eee78fc00ba159748f50dc328af4be661484848e476" default)))
- '(highlight-symbol-foreground-color "yellow")
- '(package-selected-packages
-   (quote
-    (sublimity xah-find which-key web-mode use-package treemacs spacemacs-theme spaceline solarized-theme soft-stone-theme soft-morning-theme parinfer paredit organic-green-theme monokai-theme monokai-alt-theme moe-theme material-theme magit json-mode js2-mode highlight-symbol highlight-parentheses hamburg-theme github-modern-theme flycheck flatui-theme exec-path-from-shell elpy cider better-defaults auto-package-update alect-themes)))
- '(pdf-view-midnight-colors (quote ("#b2b2b2" . "#292b2e")))
- '(tool-bar-mode nil))
-
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(highlight-symbol-face ((((type tty)) :background "DarkGreen") (((class color) (background dark)) :background "gray30" :foreground "#AD0DE2FAFFFF") (((class color) (background light)) :background "gray90"))))
 
 ;; EMACS WINDOW SIZE SAVE
 

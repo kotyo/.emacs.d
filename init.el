@@ -3,20 +3,22 @@
 ;; MacOS key bindings
 ;(setq mac-command-modifier 'control)
 ;(setq mac-option-modifier 'meta)
-;(set-default-font "Menlo 12")
+(set-face-attribute 'default nil
+		    :family "Noto Sans Mono"
+		    :height 130)
 
 ;; Macos copy-paste
-(defun copy-from-osx ()
-  (shell-command-to-string "pbpaste"))
+;(defun copy-from-osx ()
+;  (shell-command-to-string "pbpaste"))
 
-(defun paste-to-osx (text &optional push)
-  (let ((process-connection-type nil))
-    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
-      (process-send-string proc text)
-      (process-send-eof proc))))
+;(defun paste-to-osx (text &optional push)
+;  (let ((process-connection-type nil))
+;    (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+;      (process-send-string proc text)
+;      (process-send-eof proc))))
 
-(setq interprogram-cut-function 'paste-to-osx)
-(setq interprogram-paste-function 'copy-from-osx)
+;(setq interprogram-cut-function 'paste-to-osx)
+;(setq interprogram-paste-function 'copy-from-osx)
 
 ;; INSTALL PACKAGES
 ;; --------------------------------------
@@ -40,8 +42,6 @@
     desktop
     ;; Scrolling
     smooth-scrolling
-    ;; Auto completion
-    company
     ;; Git
     magit
     ;; Very large file
@@ -64,16 +64,21 @@
     js2-mode
     json-mode
     exec-path-from-shell
+    ;; Auto completion
+    company
     ;; Multilang
     flycheck
+    flycheck-clj-kondo
     ;; File Tree sidebar
     treemacs
     ;; Color themes
     ;spacemacs-theme
-    ;solarized-theme
+    ;;solarized-theme
+    cyberpunk-theme
+    ;nyan-mode
     ;;spaceline
-    ;powerline
-    flatui-theme
+    ;;powerline
+    ;;flatui-theme
     ))
 
 (mapc #'(lambda (package)
@@ -92,9 +97,10 @@
    (auto-package-update-maybe))
 
 ;; Load Theme
-(defconst current-theme 'flatui)
+;(defconst current-theme 'flatui)
+(defconst current-theme 'cyberpunk)
 (load-theme current-theme t)
-(set-cursor-color "#ffffff")
+;(set-cursor-color "#ffffff")
 ;;(spaceline-emacs-theme)
 ;(require 'powerline)
 ;;(powerline-revert)
@@ -111,8 +117,13 @@
 ;; (setq scroll-step            1
 ;;       scroll-conservatively  10000)
 
+;; Nyan mode
+;(nyan-mode 1)
+
 ;; Menu bar
 (menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
 
 ;; Desktop save mode
 (desktop-save-mode 1)
@@ -131,6 +142,7 @@
 (setq bell-volume 0)
 
 ;; Auto Completions
+(require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 
 ;; Prettify symbols
@@ -197,23 +209,20 @@
 
 ;; Search under cursor
 (global-unset-key (kbd "C-M-s"))
-(global-set-key (kbd "C-M-s") 'isearch-forward-symbol-at-point)
+(global-set-key (kbd "C-S-s") 'isearch-forward-symbol-at-point)
 (global-set-key (kbd "C-s") 'isearch-forward)
 
 ;; Set window settings
 (setq frame-title-format "%b")
 
-;; Turn off scroll bar
-(scroll-bar-mode 1)
-
 ;; JS configuration
-
 
 ;; use web-mode for .jsx files
 (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
 
 ;; http://www.flycheck.org/manual/latest/index.html
 (require 'flycheck)
+(require 'flycheck-clj-kondo)
 
 ;; turn on flychecking globally
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -225,6 +234,10 @@
 
 ;; use eslint with web-mode for jsx files
 (flycheck-add-mode 'javascript-eslint 'web-mode)
+
+;; enable flyspell globally
+(add-hook 'text-mode-hook 'flyspell-mode)
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
 ;; customize flycheck temp file prefix
 (setq-default flycheck-temp-prefix ".flycheck")
@@ -279,9 +292,17 @@
 
 
 ;; SET BACKUP DIR
-
 ;; backup in one place. flat, no tree structure
-(setq backup-directory-alist '(("" . "~/.emacs.d/emacs-backup")))
+(setq
+   backup-by-copying t      ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.emacs.d/emacs-backup"))    ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t
+   auto-save-file-name-transforms
+    `((".*" "~/.emacs.d/emacs-backup/")))       ; use versioned backups
 
 ;; BASIC CUSTOMIZATION
 ;; --------------------------------------
@@ -342,3 +363,17 @@
       (add-hook 'kill-emacs-hook 'save-framegeometry))
   )
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (solarized-theme treemacs flycheck exec-path-from-shell json-mode js2-mode web-mode which-key highlight-parentheses highlight-symbol clj-refactor cider clojure-mode use-package vlf magit company smooth-scrolling auto-package-update better-defaults))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

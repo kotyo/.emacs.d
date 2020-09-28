@@ -17,18 +17,29 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
+;; Delete trailing whitespaces on save
+;; (defun nuke-trailing-whitespace ()
+;;   (when (derived-mode-p 'prog-mode)
+;;     (delete-trailing-whitespace)))
+;; (add-hook 'before-save-hook 'my-prog-nuke-trailing-whitespace)
+
 (straight-use-package 'use-package)
 (use-package magit :straight t)
-(use-package tango-plus-theme :straight t)
-(use-package zenburn-theme :straight t)
-;(use-package solarized-theme :straight t)
+;(use-package tango-plus-theme :straight t)
+;(use-package zenburn-theme :straight t)
+;(use-package spacemacs-theme :straight t)
+;(use-package flatui-theme :straight t)
+(use-package color-theme-sanityinc-tomorrow :straight t)
 (use-package theme-changer :straight t :hook ((prog-mode . hl-line-mode)
 					      (text-mode . hl-line-mode)
 					      (after-init . cua-mode)))
 (use-package treemacs :straight t)
+(use-package which-key :straight t :hook (after-init . which-key-mode))
+(use-package vlf :straight t)
 (use-package centered-cursor-mode :straight t :hook (prog-mode . centered-cursor-mode))
 (use-package clojure-mode :straight t)
 (use-package cider :straight t)
+(use-package clj-refactor :straight t :hook (clojure-mode . clj-refactor-mode))
 (use-package paredit :straight t :hook ((clojure-mode . paredit-mode)
 					(clojurescript-mode . paredit-mode)))
 (use-package flycheck :straight t :hook ((after-init . global-flycheck-mode)
@@ -69,12 +80,26 @@
 (setq calendar-latitude 47.49)
 (setq calendar-longitude 19.04)
 (require 'theme-changer)
-(change-theme 'tango-plus 'zenburn)
+(change-theme 'sanityinc-tomorrow-bright 'sanityinc-tomorrow-night)
+;(change-theme 'tango-plus 'zenburn)
 ;(change-theme 'solarized-light 'solarized-dark)
+
+;; Magit settings
+(setq magit-display-buffer-function
+      (lambda (buffer)
+        (display-buffer buffer '(display-buffer-same-window))))
 
 ;; Cider settings
 (setq cider-repl-pop-to-buffer-on-connect 'display-only)
 (setq cider-repl-display-in-current-window t)
+(setq nrepl-force-ssh-for-remote-hosts t)
+
+;; Clj refactor
+(defun clj-refactor-mode ()
+    (clj-refactor-mode 1)
+    (yas-minor-mode 1) ; for adding require/use/import statements
+    ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+    (cljr-add-keybindings-with-prefix "C-c C-m"))
 
 ;; Cut and Paste settings
 (setq wl-copy-process nil)
@@ -97,14 +122,24 @@
 ;(desktop-save-mode 1)
 ;(setq desktop-path '("."))
 
-;; Activate which-key-mode
-(which-key-mode 1)
-
 ;; Search under cursor
 ;(global-unset-key (kbd "C-S-s"))
 (global-unset-key (kbd "C-f"))
 (global-set-key (kbd "C-f") 'isearch-forward-symbol-at-point)
 (global-set-key (kbd "C-s") 'isearch-forward)
+
+;; Autoupdate packages
+(use-package auto-package-update
+   :straight t
+   :config
+   (setq auto-package-update-delete-old-versions t
+         auto-package-update-interval 6)
+   (auto-package-update-maybe))
+
+;; Long line support
+(setq-default bidi-inhibit-bpa t)
+(setq-default bidi-display-reordering nil)
+(setq-default truncate-lines t)
 
 (provide 'init)
 

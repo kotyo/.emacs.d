@@ -17,18 +17,14 @@
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 
-;; Delete trailing whitespaces on save
-;; (defun nuke-trailing-whitespace ()
-;;   (when (derived-mode-p 'prog-mode)
-;;     (delete-trailing-whitespace)))
-;; (add-hook 'before-save-hook 'my-prog-nuke-trailing-whitespace)
+;; Deal with trailing whitespaces on save
+(defun nuke-trailing-whitespace ()
+  (when (derived-mode-p 'prog-mode)
+    (delete-trailing-whitespace)))
+(add-hook 'before-save-hook 'nuke-trailing-whitespace)
 
 (straight-use-package 'use-package)
 (use-package magit :straight t)
-;(use-package tango-plus-theme :straight t)
-;(use-package zenburn-theme :straight t)
-;(use-package spacemacs-theme :straight t)
-;(use-package flatui-theme :straight t)
 (use-package color-theme-sanityinc-tomorrow :straight t)
 (use-package theme-changer :straight t :hook ((prog-mode . hl-line-mode)
 					      (text-mode . hl-line-mode)
@@ -81,8 +77,6 @@
 (setq calendar-longitude 19.04)
 (require 'theme-changer)
 (change-theme 'sanityinc-tomorrow-bright 'sanityinc-tomorrow-night)
-;(change-theme 'tango-plus 'zenburn)
-;(change-theme 'solarized-light 'solarized-dark)
 
 ;; Magit settings
 (setq magit-display-buffer-function

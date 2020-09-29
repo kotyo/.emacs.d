@@ -135,6 +135,18 @@
 (setq-default bidi-display-reordering nil)
 (setq-default truncate-lines t)
 
+;; SET BACKUP DIR - backup in one place. flat, no tree structure
+(setq
+   backup-by-copying t      ; don't clobber symlinks
+   backup-directory-alist
+    '(("." . "~/.emacs.d/emacs-backup"))    ; don't litter my fs tree
+   delete-old-versions t
+   kept-new-versions 6
+   kept-old-versions 2
+   version-control t
+   auto-save-file-name-transforms
+    `((".*" "~/.emacs.d/emacs-backup/")))       ; use versioned backups
+
 (provide 'init)
 
 ;;; init.el ends here

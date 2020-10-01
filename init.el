@@ -39,7 +39,7 @@
 (use-package paredit :straight t :hook ((clojure-mode . paredit-mode)
 					(clojurescript-mode . paredit-mode)))
 (use-package flycheck :straight t :hook ((after-init . global-flycheck-mode)
-					 (text-mode . flyspell-mode)
+					 ;(text-mode . flyspell-mode)
 					 (prog-mode . flyspell-prog-mode)))
 (use-package flycheck-clj-kondo :straight t)
 (use-package company :straight t :hook (after-init . global-company-mode))

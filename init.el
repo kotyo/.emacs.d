@@ -24,7 +24,7 @@
 (add-hook 'before-save-hook 'nuke-trailing-whitespace)
 
 (straight-use-package 'use-package)
-(use-package magit :straight t)
+(use-package magit :straight t :config (setq-default magit-diff-refine-hunk t))
 (use-package color-theme-sanityinc-tomorrow :straight t)
 (use-package theme-changer :straight t :hook ((prog-mode . hl-line-mode)
 					      (text-mode . hl-line-mode)
